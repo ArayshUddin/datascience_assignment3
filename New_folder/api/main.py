@@ -33,8 +33,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Frontend path configuration
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+
 @app.get("/")
 async def root():
+    """Serve the frontend HTML at root"""
+    index_path = os.path.join(frontend_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    # Fallback to API info if frontend not found
     base_url = os.getenv("BASE_URL", "http://localhost:8000")
     is_railway = os.getenv("RAILWAY_ENVIRONMENT", "") != ""
     return {
@@ -72,13 +80,12 @@ app.include_router(scraper_router)
 app.include_router(search_router)
 
 # Serve frontend static files
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.exists(frontend_path):
     app.mount("/static", StaticFiles(directory=frontend_path), name="static")
     
     @app.get("/frontend")
     async def serve_frontend():
-        """Serve the frontend HTML"""
+        """Serve the frontend HTML (alternative route)"""
         index_path = os.path.join(frontend_path, "index.html")
         if os.path.exists(index_path):
             return FileResponse(index_path)

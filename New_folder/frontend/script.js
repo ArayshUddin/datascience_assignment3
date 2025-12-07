@@ -1,5 +1,5 @@
-// API Base URL
-const API_BASE_URL = 'http://localhost:8000';
+// API Base URL - dynamically determine from current location
+const API_BASE_URL = window.location.origin;
 
 // Tab Management
 document.querySelectorAll('.tab-btn').forEach(btn => {
